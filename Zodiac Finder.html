@@ -1,9 +1,280 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Tools</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Zodiac Sign Finder</title>
+    
+    <style>
+        /* --- Color Definitions --- */
+        :root {
+            --primary-red: #A30000;
+            --secondary-red: #ff8888;
+            --light-red-bg: #fffafa;
+            --button-color: #d11a2a; 
+            --button-hover: #7d0000; 
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        header {
+            background-color: var(--primary-red);
+            color: white;
+            padding: 25px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.4em;
+        }
+
+        p {
+            margin: 5px 0 0 0;
+        }
+
+        main {
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .finder-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 50px;
+        }
+
+        label {
+            font-size: 1.1em;
+            display: block;
+            margin-bottom: 5px; /* Reduced margin here */
+            font-weight: 600;
+        }
+        
+        /* New style for the date format labels */
+        .date-format-label {
+            display: block;
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 15px; /* Adds space before the input field */
+        }
+
+
+        #birthdate {
+            padding: 12px;
+            margin-right: 15px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: var(--button-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--button-hover);
+        }
+
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            min-height: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-red);
+            border: 2px dashed var(--secondary-red);
+            border-radius: 8px;
+            background-color: var(--light-red-bg);
+            transition: all 0.3s ease;
+        }
+        
+        /* --- Zodiac Guide Grid Styling --- */
+        .zodiac-guide h2 {
+            color: var(--primary-red);
+            border-bottom: 3px solid var(--secondary-red);
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+
+        .zodiac-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+        }
+
+        .zodiac-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .zodiac-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .zodiac-icon {
+            width: 70px; 
+            height: 70px;
+            line-height: 70px;
+            font-size: 3em; 
+            color: var(--primary-red);
+            background-color: var(--light-red-bg);
+            border-radius: 50%;
+            border: 2px solid var(--primary-red);
+            margin-bottom: 10px;
+            font-style: normal;
+        }
+        
+        .zodiac-card h3 {
+            font-size: 1.1em;
+            color: #333;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding: 20px 0;
+            background-color: #eee;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcom!</h1>
+
+    <header>
+        <h1>Chinese Zodiac Sign Finder</h1>
+        <p>Enter your date of birth to discover your Chinese Zodiac Animal.</p>
+    </header>
+
+    <main>
+        <section class="finder-section">
+            <label for="birthdate">Select Your Date of Birth (The year determines your sign):</label>
+            
+            <span class="date-format-label">
+                年 (Year) &nbsp; 月 (Month) &nbsp; 日 (Day)
+            </span>
+            
+            <input type="date" id="birthdate" required>
+            
+            <button onclick="calculateZodiac()">Find My Zodiac</button>
+
+            <div id="result">
+                </div>
+        </section>
+
+        <section class="zodiac-guide">
+            <h2>The 12 Chinese Zodiac Animals</h2>
+            <p>A simple visual guide to the 12-year cycle.</p>
+            <div class="zodiac-grid" id="zodiac-grid">
+                </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>This is a demonstration of an interactive web design concept.</p>
+    </footer>
+
+    <script>
+        // Array of the 12 Chinese Zodiac animals, starting with the Rat for easy calculation
+        const ZODIAC_ANIMALS = [
+            { name: "Rat", icon: "🐀" }, 
+            { name: "Ox", icon: "🐂" }, 
+            { name: "Tiger", icon: "🐅" }, 
+            { name: "Rabbit", icon: "🐇" }, 
+            { name: "Dragon", icon: "🐉" }, 
+            { name: "Snake", icon: "🐍" }, 
+            { name: "Horse", icon: "🐎" }, 
+            { name: "Goat", icon: "🐐" }, 
+            { name: "Monkey", icon: "🐒" }, 
+            { name: "Rooster", icon: "🐓" }, 
+            { name: "Dog", icon: "🐕" }, 
+            { name: "Pig", icon: "🐖" }
+        ];
+        
+        // --- CALCULATION LOGIC ---
+        function getZodiac(year) {
+            let index = (year - 1900) % 12;
+
+            if (index < 0) {
+                index += 12;
+            }
+            
+            return ZODIAC_ANIMALS[index].name;
+        }
+
+        function calculateZodiac() {
+            const dateInput = document.getElementById('birthdate').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!dateInput) {
+                resultDiv.innerHTML = "Please select a valid date of birth.";
+                return;
+            }
+
+            const yearString = dateInput.substring(0, 4);
+            const year = parseInt(yearString, 10); 
+            
+            if (isNaN(year)) {
+                resultDiv.innerHTML = "Error: Could not determine the year from the date input.";
+                return;
+            }
+
+            const zodiac = getZodiac(year);
+
+            resultDiv.innerHTML = `Your Chinese Zodiac Animal is: <strong>${zodiac}</strong>!`;
+        }
+
+        // --- GUIDE GENERATION LOGIC (Using Emojis as Images) ---
+        function generateZodiacGuide() {
+            const zodiacGrid = document.getElementById('zodiac-grid');
+            zodiacGrid.innerHTML = '';
+            
+            ZODIAC_ANIMALS.forEach(animal => {
+                const card = document.createElement('div');
+                card.className = 'zodiac-card';
+                
+                card.innerHTML = `
+                    <span class="zodiac-icon">${animal.icon}</span>
+                    <h3>${animal.name}</h3>
+                `;
+                zodiacGrid.appendChild(card);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', generateZodiacGuide);
+    </script>
+
 </body>
 </html>
